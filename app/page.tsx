@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { regionData } from "../data/regions"; // 만약 에러 시 '@/data/regions' 로 변경
+import { regionData } from "@/data/regions";// 만약 에러 시 '@/data/regions' 로 변경
 
 // 🎯 5개 정식 제휴업체 데이터
 const initialShops = [
