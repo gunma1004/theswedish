@@ -1,3 +1,13 @@
+import type { Metadata, Viewport } from 'next';
+import './globals.css';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#050505',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://theswedish.netlify.app'),
   title: {
@@ -22,15 +32,10 @@ export const metadata: Metadata = {
     '청주스웨디시',
     '아산홈타이',
   ],
-  // 🟢 네이버 사이트 소유확인 메타태그 추가
-  verification: {
-    other: {
-      'naver-site-verification': '445be2ac4c8c60aad6738d83702c71aa03bac14e',
-    },
-  },
   openGraph: {
     title: '더스웨디시 (The Swedish) - 프리미엄 홈케어 테라피',
-    description: '서울·경기·인천·충청권 전지역 30분 도착! 프라이빗 방문 스웨디시 & 홈타이 전문 예약 플랫폼',
+    description:
+      '서울·경기·인천·충청권 전지역 30분 도착! 프라이빗 방문 스웨디시 & 홈타이 전문 예약 플랫폼',
     url: 'https://theswedish.netlify.app',
     siteName: '더스웨디시',
     locale: 'ko_KR',
@@ -51,3 +56,24 @@ export const metadata: Metadata = {
     images: ['/my-banner.png'],
   },
 };
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="ko">
+      <head>
+        {/* 🟢 네이버 서치어드바이저 소유확인 메타태그 직접 삽입 */}
+        <meta
+          name="naver-site-verification"
+          content="445be2ac4c8c60aad6738d83702c71aa03bac14e"
+        />
+      </head>
+      <body className="bg-[#050505] text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
+        {children}
+      </body>
+    </html>
+  );
+}
