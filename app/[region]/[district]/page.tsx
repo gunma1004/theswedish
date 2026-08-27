@@ -9,14 +9,14 @@ interface PageProps {
   }>;
 }
 
-// 🟢 1. 구/시 단위 7개 템플릿 순환 동적 SEO 메타 태그 생성
+// 🟢 1. 구/시 단위 7개 템플릿 순환 동적 SEO 메타 태그 생성 (더스웨디시 전용 키워드)
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const { region, district } = resolvedParams;
 
   const regionInfo = regionData[region];
   const districtName = regionInfo?.districts[district]?.name || "상세 지역";
-  const regionName = regionInfo?.name || "수도권";
+  const regionName = regionInfo?.name || "수도권·충청권";
 
   // 문자열 해시 기반 7개 템플릿 균등 분기 알고리즘
   const hash = (district + region).split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
@@ -27,33 +27,33 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   switch (seed) {
     case 0:
-      title = `${districtName} 출장마사지 추천 제휴업체 순위 | 릴렉스몽`;
-      description = `${regionName} ${districtName} 전지역 30분 도착 보장! 릴렉스몽에서 검증된 1:1 프라이빗 출장마사지 및 100% 현장 후불제 테라피 샵을 확인하세요.`;
+      title = `${districtName} 스웨디시마사지·홈타이 추천 제휴샵 순위 | 더스웨디시`;
+      description = `${regionName} ${districtName} 전지역 30분 도착 보장! 더스웨디시에서 엄선된 1:1 방문스웨디시마사지 및 정통 방문타이마사지 제휴샵을 확인하세요.`;
       break;
     case 1:
-      title = `${districtName} 출장마사지 홈타이·스웨디시 24시 할인 - 릴렉스몽`;
-      description = `${districtName} 출장마사지 전문 힐러 실시간 대기. 타이·아로마·스웨디시 맞춤 힐링 코스 및 24시간 안심 후불 예약 제휴점 안내.`;
+      title = `${districtName} 홈타이·방문스웨디시마사지 24시 실시간 예약 - 더스웨디시`;
+      description = `${districtName} 방문스웨디시 및 홈타이 전문 테라피스트 대기. 아로마 림프 케어와 24시간 안심 정찰제 제휴점 정보 안내.`;
       break;
     case 2:
-      title = `${regionName} ${districtName} 출장마사지 베스트 힐링 케어 | 릴렉스몽`;
-      description = `${districtName} 전구역 어디든 빠른 방문! 스트레스와 피로를 완벽하게 풀어주는 ${districtName} 출장마사지 만족도 1위 제휴업체 정보.`;
+      title = `${regionName} ${districtName} 방문아로마마사지·스웨디시 베스트 힐링 케어 | 더스웨디시`;
+      description = `${districtName} 전구역 어디든 빠른 방문! 지친 일상의 피로를 풀어주는 ${districtName} 방문스웨디시마사지 만족도 1위 제휴업체 정보.`;
       break;
     case 3:
-      title = `${districtName} 출장마사지 1:1 맞춤 프리미엄 홈케어 [릴렉스몽]`;
-      description = `${regionName} ${districtName} 전역 24시 신속 방문 출장마사지. 내 공간에서 편안하게 즐기는 최고급 바디케어 코스를 실시간 확인해보세요.`;
+      title = `${districtName} 스웨디시마사지 1:1 맞춤 프리미엄 홈케어 [더스웨디시]`;
+      description = `${regionName} ${districtName} 전역 24시 신속 방문 홈타이. 내 공간에서 편안하게 즐기는 최고급 감성 스웨디시 코스를 실시간 확인해보세요.`;
       break;
     case 4:
-      title = `${districtName} 출장마사지 타이·아로마 24시 후불 예약 - 릴렉스몽`;
-      description = `${districtName} 출장마사지 안심 예약 플랫폼! 100% 후불 정찰제와 베테랑 테라피스트의 프라이빗 힐링 서비스를 제공합니다.`;
+      title = `${districtName} 홈타이·방문타이마사지 24시 안심 예약 - 더스웨디시`;
+      description = `${districtName} 방문아로마마사지 및 스웨디시 안심 예약 플랫폼! 100% 현장 정찰제와 베테랑 테라피스트의 프라이빗 힐링 서비스를 제공합니다.`;
       break;
     case 5:
-      title = `${districtName} 출장마사지 만족도 1위 프라이빗 테라피 | 릴렉스몽`;
-      description = `${regionName} ${districtName} 고객 만족도 최우수 출장마사지 제휴점 안내. 건식 타이부터 스웨디시까지 맞춤형 힐링을 지금 예약하세요.`;
+      title = `${districtName} 스웨디시마사지 만족도 1위 프라이빗 테라피 | 더스웨디시`;
+      description = `${regionName} ${districtName} 고객 만족도 최우수 방문스웨디시 제휴점 안내. 정통 타이부터 림프 스웨디시까지 맞춤형 힐링을 지금 예약하세요.`;
       break;
     case 6:
     default:
-      title = `${districtName} 출장마사지 실시간 예약 제휴점 가이드 | 릴렉스몽`;
-      description = `${districtName} 전지역 30분 도착! 릴렉스몽이 엄선한 ${districtName} 출장마사지 베스트 업체의 대표 코스 및 요금 정보를 안내합니다.`;
+      title = `${districtName} 방문스웨디시마사지·홈타이 실시간 예약 가이드 | 더스웨디시`;
+      description = `${districtName} 전지역 30분 도착! 더스웨디시가 엄선한 ${districtName} 스웨디시마사지 & 방문타이마사지 베스트 업체의 대표 코스 및 요금을 안내합니다.`;
       break;
   }
 
@@ -61,17 +61,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     keywords: [
-      `${regionName} ${districtName} 출장마사지`,
-      `${districtName} 출장마사지`,
+      `${regionName} ${districtName} 스웨디시마사지`,
+      `${districtName} 스웨디시마사지`,
       `${districtName} 홈타이`,
-      `${districtName} 스웨디시`,
-      "릴렉스몽",
+      `${districtName} 방문스웨디시마사지`,
+      `${districtName} 방문타이마사지`,
+      `${districtName} 방문아로마마사지`,
+      "더스웨디시",
+      "The Swedish"
     ],
     openGraph: {
       title,
       description,
       type: "website",
-      siteName: "릴렉스몽",
+      siteName: "더스웨디시",
       images: [
         {
           url: "/my-banner.png",
@@ -86,76 +89,76 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-// 🎯 제휴 업체 데이터
-const shops = [
+// 🎯 제휴 업체 기본 데이터
+const defaultShops = [
   {
     id: 1,
-    name: "🔥 한국골든테라피",
-    location: "서울·경기·인천 전지역 (실시간 신속 방문)",
-    desc: "⭐ 만족도 1위! 지친 일상을 깨우는 정성 가득한 프리미엄 1:1 홈힐링 테라피",
-    phone: "0507-1280-3361",
-    badge: "실시간 인기폭발",
-    badgeColor: "bg-red-500 text-white animate-pulse",
+    name: "✨ 한국미인테라피",
+    location: "전지역 (실시간 신속 방문)",
+    desc: "🏆 품격 있는 힐링을 선사하는 최고급 프라이빗 1:1 맞춤형 방문 스웨디시 & 아로마 테라피",
+    phone: "0507-1280-3288",
+    badge: "만족도 최우수",
+    badgeColor: "bg-amber-500 text-black font-extrabold shadow-lg shadow-amber-500/20",
     image: "/shop1.jpg",
     courses: [
-      { name: "릴렉스 건식 케어 (60분)", price: "60,000원", best: false },
-      { name: "프리미엄 스웨디시 (60분)", price: "140,000원", best: true },
+      { name: "맞춤형 방문바디케어 (60분)", price: "90,000원", best: false },
+      { name: "스페셜 방문아로마마사지 (60분)", price: "140,000원", best: true },
     ]
   },
   {
     id: 2,
-    name: "✨ 한국미인테라피",
-    location: "서울·경기·인천 전지역",
-    desc: "🏆 품격 있는 힐링을 선사하는 최고급 프라이빗 1:1 맞춤형 방문 테라피",
-    phone: "0507-1280-3288",
-    badge: "만족도 최우수",
-    badgeColor: "bg-amber-500 text-black",
+    name: "🌟 퀸즈홈테라피",
+    location: "전지역 (30분 내 방문)",
+    desc: "💯 전문 테라피스트들의 체계적이고 세심한 1:1 맞춤 힐링 및 피로 회복 프로그램",
+    phone: "0507-1280-3228",
+    badge: "신규 제휴할인",
+    badgeColor: "bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-extrabold",
     image: "/shop2.jpg",
     courses: [
-      { name: "맞춤형 바디 케어 (60분)", price: "90,000원", best: false },
-      { name: "스페셜 아로마 힐링 (60분)", price: "140,000원", best: true },
+      { name: "스탠다드 방문타이마사지 (60분)", price: "60,000원", best: false },
+      { name: "VIP 방문스웨디시마사지 (90분)", price: "140,000원", best: true },
     ]
   },
   {
     id: 3,
-    name: "💎 주주테라피",
-    location: "서울·경기·인천 전지역",
-    desc: "⚡ 철저한 위생 관리와 럭셔리 힐링 케어로 완성하는 일상의 완벽한 휴식",
-    phone: "0507-1280-3180",
-    badge: "24시 상시할인",
-    badgeColor: "bg-purple-600 text-white",
+    name: "🔥 한국골든테라피",
+    location: "전지역 상시 신속 방문",
+    desc: "⭐ 만족도 1위! 지친 일상을 깨우는 정성 가득한 프리미엄 1:1 홈타이 & 림프 스웨디시",
+    phone: "0507-1280-3361",
+    badge: "실시간 인기 1위",
+    badgeColor: "bg-red-500 text-white font-black animate-pulse",
     image: "/shop3.jpg",
     courses: [
-      { name: "타이/아로마 코스 (60분)", price: "60,000원", best: false },
-      { name: "한국 스웨디시케어 (60분)", price: "140,000원", best: true },
+      { name: "릴렉스 건식 홈타이 (60분)", price: "60,000원", best: false },
+      { name: "프리미엄 스웨디시마사지 (60분)", price: "140,000원", best: true },
     ]
   },
   {
     id: 4,
-    name: "🌟 퀸즈홈테라피",
-    location: "서울·경기·인천 전지역",
-    desc: "💯 전문 테라피스트들의 체계적이고 세심한 1:1 맞춤 피로 회복 프로그램",
-    phone: "0507-1280-3228",
-    badge: "신규 제휴할인",
-    badgeColor: "bg-blue-600 text-white",
+    name: "💎 젊고마인드좋은테라피",
+    location: "전지역 상시 대기",
+    desc: "⚡ 밝고 친절한 에너지를 전하는 감성 힐링! 내 집에서 편안하게 즐기는 힐링 테라피",
+    phone: "0507-1280-3180",
+    badge: "재방문율 99%",
+    badgeColor: "bg-zinc-800 text-amber-400 border border-amber-500/40 font-bold",
     image: "/shop4.jpg",
     courses: [
-      { name: "스탠다드 타이코스 (60분)", price: "60,000원", best: false },
-      { name: "VIP 스웨디시 (90분)", price: "140,000원", best: true },
+      { name: "타이/아로마 코스 (60분)", price: "60,000원", best: false },
+      { name: "한국 감성 스웨디시 (60분)", price: "140,000원", best: true },
     ]
   },
   {
     id: 5,
     name: "👑 24시미녀테라피",
-    location: "서울·경기·인천 전지역",
-    desc: "🚀 100% 현장 후불 정찰제! 수도권 전지역 평균 30분 내 신속 방문 보장",
-    phone: "0507-1280-3183",
-    badge: "재방문율 99%",
-    badgeColor: "bg-emerald-500 text-black",
+    location: "전지역 30분 내 도착 보장",
+    desc: "🚀 100% 현장 정찰제! 전지역 평균 30분 내 신속 방문 보장 프리미엄 홈케어",
+    phone: "0507-1280-3126",
+    badge: "24시 신속방문",
+    badgeColor: "bg-emerald-500 text-black font-extrabold",
     image: "/shop5.jpg",
     courses: [
-      { name: "릴렉스 타이 코스 (60분)", price: "60,000원", best: false },
-      { name: "시그니처 스웨디시 (60분)", price: "140,000원", best: true },
+      { name: "릴렉스 방문타이마사지 (60분)", price: "60,000원", best: false },
+      { name: "시그니처 방문스웨디시마사지 (60분)", price: "140,000원", best: true },
     ]
   }
 ];
@@ -167,27 +170,28 @@ export default async function DistrictPage({ params }: PageProps) {
   const regionInfo = regionData[region];
   const districtObj = regionInfo?.districts[district];
   const districtName = districtObj?.name || district;
-  const regionName = regionInfo?.name || "수도권";
+  const regionName = regionInfo?.name || "수도권·충청권";
   const dongs = districtObj?.dongs || [];
+
+  // 서버 렌더링 시에도 매번 랜덤 셔플
+  const shuffledShops = [...defaultShops].sort(() => Math.random() - 0.5);
 
   return (
     <div className="bg-[#050505] text-gray-100 min-h-screen flex flex-col font-sans selection:bg-amber-500 selection:text-black">
       
       {/* 상단 네온 헤더 */}
-      <header className="sticky top-0 z-50 bg-[#050505]/85 backdrop-blur-xl border-b border-amber-500/20 px-4 py-3.5 shadow-[0_4px_20px_rgba(245,158,11,0.1)]">
+      <header className="sticky top-0 z-50 bg-[#050505]/90 backdrop-blur-xl border-b border-amber-500/20 px-4 py-3.5 shadow-[0_4px_20px_rgba(245,158,11,0.08)]">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <Link href="/" className="flex items-center gap-3 group">
-            <img 
-              src="/logo.png" 
-              alt="릴렉스몽 로고" 
-              className="w-10 h-10 rounded-xl object-cover border border-amber-500/40 shadow-[0_0_12px_rgba(245,158,11,0.4)] group-hover:scale-105 transition-transform" 
-            />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center font-black text-black text-xl shadow-[0_0_15px_rgba(245,158,11,0.4)] group-hover:scale-105 transition-transform">
+              TS
+            </div>
             <div className="flex flex-col">
               <span className="text-xl font-black tracking-wider bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 bg-clip-text text-transparent">
-                릴렉스몽
+                더스웨디시
               </span>
-              <span className="text-[10px] text-gray-400 tracking-tighter uppercase">
-                RELAXMONG &middot; SEOUL &middot; GYEONGGI &middot; INCHEON
+              <span className="text-[10px] text-gray-400 tracking-tight uppercase font-medium">
+                THE SWEDISH &middot; {regionName} {districtName}
               </span>
             </div>
           </Link>
@@ -202,19 +206,23 @@ export default async function DistrictPage({ params }: PageProps) {
         
         {/* 📍 구 맞춤 비주얼 배너 */}
         <section className="text-center my-2">
-          <div className="mb-8 overflow-hidden rounded-3xl border border-amber-500/30 shadow-[0_0_40px_rgba(245,158,11,0.15)] relative w-full">
-            <img 
-              src="/my-banner.png" 
-              alt={`${districtName} 출장마사지 메인 배너`} 
-              className="w-full h-auto object-cover block"
-            />
+          <div className="mb-6 py-6 px-4 rounded-3xl bg-gradient-to-b from-[#121214] to-[#0a0a0c] border border-amber-500/20 text-center shadow-lg relative overflow-hidden">
+            <span className="inline-block text-xs font-bold text-amber-400 tracking-widest uppercase bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 mb-3">
+              {regionName} &middot; {districtName} SPECIAL CARE
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug">
+              {districtName} <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 bg-clip-text text-transparent">스웨디시마사지 & 홈타이</span>
+            </h1>
+            <p className="mt-2 text-xs sm:text-sm text-gray-400 max-w-xl mx-auto">
+              {districtName} 전지역 30분 도착 보장! 검증된 1:1 방문 테라피 제휴점 안내
+            </p>
           </div>
 
-          {/* 해당 구에 속한 모든 세부 동 목록 한눈에 보기 */}
+          {/* 해당 구에 속한 모든 세부 동 목록 */}
           {dongs.length > 0 && (
             <div className="bg-gradient-to-b from-[#18181b] to-[#0f0f11] border-2 border-amber-500/40 p-6 rounded-3xl max-w-xl mx-auto mb-14 shadow-xl text-left">
               <h2 className="text-xs text-amber-400 font-black uppercase tracking-wider mb-3">
-                ✨ {districtName} 세부 동별 출장마사지 선택
+                ✨ {districtName} 세부 동별 스웨디시 & 홈타이 바로가기
               </h2>
               <div className="flex flex-wrap gap-2">
                 {dongs.map((dong, idx) => (
@@ -231,20 +239,22 @@ export default async function DistrictPage({ params }: PageProps) {
           )}
         </section>
 
-        {/* 제휴 업체 카드 리스트 */}
+        {/* 제휴 업체 카드 리스트 (새로고침 시 랜덤 셔플 노출) */}
         <section className="space-y-6">
           <div className="flex justify-between items-end mb-4 px-2">
             <div>
-              <h1 className="text-xl md:text-2xl font-black text-white flex items-center gap-2">
-                <span>🔥</span> {regionName} {districtName} 출장마사지 추천 제휴업체
-              </h1>
-              <p className="text-xs text-gray-400 mt-1">{districtName} 전지역 30분 도착 가능한 100% 후불 정찰제 프리미엄 샵입니다.</p>
+              <h2 className="text-xl md:text-2xl font-black text-white flex items-center gap-2">
+                <span>🏆</span> {districtName} 추천 프리미엄 제휴샵
+              </h2>
+              <p className="text-xs text-gray-400 mt-1">{districtName} 전지역 30분 내 도착 가능한 100% 안심 정찰제 샵입니다.</p>
             </div>
           </div>
 
-          {shops.map((shop) => (
-            <article key={shop.id} className="bg-gradient-to-b from-[#141416] to-[#0d0d0f] border border-amber-500/25 hover:border-amber-500/60 transition-all duration-300 rounded-3xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] relative group">
-              
+          {shuffledShops.map((shop) => (
+            <article 
+              key={shop.id} 
+              className="bg-gradient-to-b from-[#141416] to-[#0d0d0f] border border-amber-500/25 hover:border-amber-500/60 transition-all duration-300 rounded-3xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] relative group"
+            >
               <div className="relative h-48 md:h-56 w-full overflow-hidden">
                 <img 
                   src={shop.image} 
@@ -263,7 +273,7 @@ export default async function DistrictPage({ params }: PageProps) {
               <div className="p-6 md:p-7 -mt-6 relative z-10">
                 <div className="mb-2">
                   <span className="text-xs text-amber-400/90 font-bold bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20 inline-block mb-2">
-                    📍 {districtName} 전지역 신속 방문 출장마사지
+                    📍 {districtName} 전지역 신속 방문 테라피
                   </span>
                 </div>
 
@@ -299,7 +309,7 @@ export default async function DistrictPage({ params }: PageProps) {
                     <span className="text-base">📞</span> 전화로 즉시예약
                   </a>
                   <a 
-                    href={`sms:${shop.phone}?body=${encodeURIComponent(`${districtName} ${shop.name} 출장마사지 예약 문의드립니다. (릴렉스몽 보고 연락드렸어요)`)}`} 
+                    href={`sms:${shop.phone}?body=${encodeURIComponent(`${districtName} ${shop.name} 스웨디시/홈타이 예약 문의드립니다. (더스웨디시 보고 연락드렸어요)`)}`} 
                     className="flex items-center justify-center gap-2 bg-neutral-900 hover:bg-neutral-800 text-white font-black py-4 rounded-2xl text-xs md:text-sm border border-white/10 transition-all hover:border-amber-500/40 transform active:scale-95 shadow-md"
                   >
                     <span className="text-base">💬</span> 간편 문자상담
@@ -315,8 +325,8 @@ export default async function DistrictPage({ params }: PageProps) {
 
       <footer className="bg-[#030303] border-t border-white/10 py-10 text-center text-gray-500 text-xs mt-auto">
         <div className="max-w-4xl mx-auto px-4 space-y-3">
-          <p className="text-gray-400 font-bold">릴렉스몽은 건전하고 안전한 1:1 방문 홈케어 정보 플랫폼입니다.</p>
-          <p className="text-[11px] text-gray-600">COPYRIGHT &copy; RELAXMONG ALL RIGHTS RESERVED.</p>
+          <p className="text-gray-400 font-bold">더스웨디시는 건전하고 안전한 1:1 방문 홈케어 테라피 정보 플랫폼입니다.</p>
+          <p className="text-[11px] text-gray-600">COPYRIGHT &copy; THE SWEDISH ALL RIGHTS RESERVED.</p>
         </div>
       </footer>
     </div>

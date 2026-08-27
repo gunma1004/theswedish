@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-// 서울·경기·인천 전지역 데이터
+// 서울·경기·인천 + 충청권(천안·아산·대전·청주) 전지역 데이터
 const regionData: Record<
   string,
   { name: string; districts: Record<string, { name: string; dongs: string[] }> }
@@ -10,165 +10,175 @@ const regionData: Record<
   seoul: {
     name: "서울특별시",
     districts: {
-      jongno: { name: "종로구", dongs: ["청운동", "효자동", "사직동", "삼청동", "부암동", "평창동", "무악동", "교남동", "가회동", "종로1.2.3.4가동", "종로5.6가동", "이화동", "혜화동", "창신1동", "창신2동", "창신3동", "숭인1동", "숭인2동"] },
-      jung: { name: "중구", dongs: ["소공동", "회현동", "명동", "필동", "장충동", "광희동", "을지로동", "신당동", "다산동", "약수동", "청구동", "동화동", "황학동", "중림동"] },
-      yongsan: { name: "용산구", dongs: ["후암동", "용산2가동", "남영동", "청파동", "원효로1동", "원효로2동", "효창동", "용문동", "이촌1동", "이촌2동", "이태원1동", "이태원2동", "한남동", "서빙고동", "보광동"] },
-      seongdong: { name: "성동구", dongs: ["왕십리2동", "왕십리도선동", "마장동", "사근동", "행당1동", "행당2동", "응봉동", "금호1가동", "금호2.3가동", "금호4가동", "옥수동", "성수1가1동", "성수1가2동", "성수2가1동", "성수2가3동", "송정동", "용답동"] },
-      gwangjin: { name: "광진구", dongs: ["중곡1동", "중곡2동", "중곡3동", "중곡4동", "능동", "구의1동", "구의2동", "구의3동", "광장동", "자양1동", "자양2동", "자양3동", "자양4동", "화양동", "군자동"] },
-      dongdaemun: { name: "동대문구", dongs: ["신설동", "용두동", "제기동", "전농1동", "전농2동", "답십리1동", "답십리2동", "장안1동", "장안2동", "청량리동", "회기동", "휘경1동", "휘경2동", "이문1동", "이문2동"] },
-      jungnang: { name: "중랑구", dongs: ["면목본동", "면목2동", "면목3.4동", "면목5동", "면목7동", "상봉1동", "상봉2동", "중화1동", "중화2동", "묵1동", "묵2동", "망우본동", "망우3동", "신내1동", "신내2동"] },
-      seongbuk: { name: "성북구", dongs: ["성북동", "삼선동", "동선동", "돈암1동", "돈암2동", "안암동", "보문동", "정릉1동", "정릉2동", "정릉3동", "정릉4동", "길음1동", "길음2동", "종암동", "월곡1동", "월곡2동", "장위1동", "장위2동", "장위3동", "석관동"] },
-      gangbuk: { name: "강북구", dongs: ["삼양동", "미아동", "송중동", "송천동", "삼각산동", "번1동", "번2동", "번3동", "수유1동", "수유2동", "수유3동", "우이동", "인수동"] },
-      dobong: { name: "도봉구", dongs: ["창1동", "창2동", "창3동", "창4동", "창5동", "도봉1동", "도봉2동", "쌍문1동", "쌍문2동", "쌍문3동", "쌍문4동", "방학1동", "방학2동", "방학3동"] },
-      nowon: { name: "노원구", dongs: ["상계1동", "상계2동", "상계3.4동", "상계5동", "상계6.7동", "상계8동", "상계9동", "상계10동", "중계본동", "중계1동", "중계2.3동", "중계4동", "하계1동", "하계2동", "공릉1동", "공릉2동"] },
-      eunpyeong: { name: "은평구", dongs: ["불광1동", "불광2동", "갈현1동", "갈현2동", "구산동", "대조동", "응암1동", "응암2동", "응암3동", "역촌동", "신사1동", "신사2동", "증산동", "수색동", "진관동"] },
-      seodaemun: { name: "서대문구", dongs: ["천연동", "북아현동", "충현동", "신촌동", "연희동", "홍제1동", "홍제2동", "홍제3동", "홍은1동", "홍은2동", "남가좌1동", "남가좌2동", "북가좌1동", "북가좌2동"] },
-      mapo: { name: "마포구", dongs: ["공덕동", "아현동", "도화동", "용강동", "대흥동", "염리동", "신수동", "서교동", "합정동", "망원1동", "망원2동", "연남동", "성산1동", "성산2동", "상암동"] },
-      yangcheon: { name: "양천구", dongs: ["목1동", "목2동", "목3동", "목4동", "목5동", "신월1동", "신월2동", "신월3동", "신월4동", "신월5동", "신월6동", "신월7동", "신정1동", "신정2동", "신정3동", "신정4동", "신정6동", "신정7동"] },
-      gangseo: { name: "강서구", dongs: ["등촌1동", "등촌2동", "등촌3동", "화곡본동", "화곡1동", "화곡2동", "화곡3동", "화곡4동", "화곡6동", "화곡8동", "우장산동", "가양1동", "가양2동", "가양3동", "발산1동", "공항동", "방화1동", "방화2동", "방화3동"] },
-      guro: { name: "구로구", dongs: ["신도림동", "구로1동", "구로2동", "구로3동", "구로4동", "구로5동", "가리봉동", "고척1동", "고척2동", "개봉1동", "개봉2동", "개봉3동", "오류1동", "오류2동", "수궁동"] },
-      geumcheon: { name: "금천구", dongs: ["가산동", "독산1동", "독산2동", "독산3동", "독산4동", "시흥1동", "시흥2동", "시흥3동", "시흥4동", "시흥5동"] },
-      yeongdeungpo: { name: "영등포구", dongs: ["영등포본동", "영등포동", "여의동", "당산1동", "당산2동", "도림동", "문래동", "양평1동", "양평2동", "신길1동", "신길3동", "신길4동", "신길5동", "신길6동", "신길7동", "대림1동", "대림2동", "대림3동"] },
-      dongjak: { name: "동작구", dongs: ["노량진1동", "노량진2동", "상도1동", "상도2동", "상도3동", "상도4동", "흑석동", "사당1동", "사당2동", "사당3동", "사당4동", "사당5동", "대방동", "신대방1동", "신대방2동"] },
-      gwanak: { name: "관악구", dongs: ["보라매동", "청림동", "성현동", "행운동", "낙성대동", "청룡동", "은천동", "상현동", "서원동", "신원동", "서림동", "신사동", "난향동", "조원동", "대학동", "난곡동", "삼성동", "미성동"] },
-      seocho: { name: "서초구", dongs: ["서초1동", "서초2동", "서초3동", "서초4동", "잠원동", "반포본동", "반포1동", "반포2동", "반포3동", "반포4동", "방배본동", "방배1동", "방배2동", "방배3동", "방배4동", "양재1동", "양재2동", "내곡동"] },
-      gangnam: { name: "강남구", dongs: ["역삼1동", "역삼2동", "개포1동", "개포2동", "개포4동", "청담동", "삼성1동", "삼성2동", "대치1동", "대치2동", "대치4동", "신사동", "논현1동", "논현2동", "압구정동", "세곡동", "자곡동", "일원동", "수서동", "도곡1동", "도곡2동"] },
-      songpa: { name: "송파구", dongs: ["잠실본동", "잠실2동", "잠실3동", "잠실4동", "잠실6동", "잠실7동", "풍납1동", "풍납2동", "거여1동", "거여2동", "마천1동", "마천2동", "방이1동", "방이2동", "오륜동", "오금동", "송파1동", "송파2동", "석촌동", "삼전동", "가락본동", "가락1동", "가락2동", "문정1동", "문정2동", "장지동", "위례동", "잠실동"] },
-      gangdong: { name: "강동구", dongs: ["강일동", "상일1동", "상일2동", "명일1동", "명일2동", "고덕1동", "고덕2동", "암사1동", "암사2동", "암사3동", "천호1동", "천호2동", "천호3동", "성내1동", "성내2동", "성내3동", "둔촌1동", "둔촌2동"] },
+      gangnam: { name: "강남구", dongs: ["역삼동", "논현동", "삼성동", "대치동", "신사동", "청담동", "압구정동", "개포동", "일원동", "수서동", "도곡동", "자곡동", "세곡동"] },
+      seocho: { name: "서초구", dongs: ["서초동", "잠원동", "반포동", "방배동", "양재동", "내곡동"] },
+      songpa: { name: "송파구", dongs: ["잠실동", "신천동", "풍납동", "송파동", "석촌동", "삼전동", "가락동", "문정동", "장지동", "방이동", "오금동", "거여동", "마천동"] },
+      gangdong: { name: "강동구", dongs: ["천호동", "강일동", "상일동", "명일동", "고덕동", "암사동", "성내동", "둔촌동", "길동"] },
+      mapo: { name: "마포구", dongs: ["공덕동", "아현동", "도화동", "용강동", "대흥동", "염리동", "신수동", "서교동", "합정동", "망원동", "연남동", "성산동", "상암동"] },
+      yongsan: { name: "용산구", dongs: ["후암동", "용산동", "남영동", "청파동", "원효로동", "효창동", "용문동", "이촌동", "이태원동", "한남동", "서빙고동", "보광동"] },
+      yeongdeungpo: { name: "영등포구", dongs: ["영등포동", "여의도동", "당산동", "도림동", "문래동", "양평동", "신길동", "대림동"] },
+      guro: { name: "구로구", dongs: ["신도림동", "구로동", "가리봉동", "고척동", "개봉동", "오류동", "항동", "수궁동"] },
+      geumcheon: { name: "금천구", dongs: ["가산동", "독산동", "시흥동"] },
+      gangseo: { name: "강서구", dongs: ["염창동", "등촌동", "화곡동", "가양동", "마곡동", "내발산동", "외발산동", "공항동", "방화동"] },
+      yangcheon: { name: "양천구", dongs: ["목동", "신월동", "신정동"] },
+      dongjak: { name: "동작구", dongs: ["노량진동", "상도동", "흑석동", "사당동", "대방동", "신대방동"] },
+      gwanak: { name: "관악구", dongs: ["봉천동", "신림동", "남현동", "보라매동", "청룡동", "낙성대동", "대학동"] },
+      seodaemun: { name: "서대문구", dongs: ["충정로동", "천연동", "북아현동", "신촌동", "연희동", "홍제동", "홍은동", "남가좌동", "북가좌동"] },
+      jongno: { name: "종로구", dongs: ["청운동", "효자동", "사직동", "삼청동", "부암동", "평창동", "혜화동", "창신동", "숭인동", "종로1~4가동"] },
+      jung: { name: "중구", dongs: ["소공동", "회현동", "명동", "필동", "장충동", "을지로동", "신당동", "다산동", "약수동", "황학동"] },
+      seongdong: { name: "성동구", dongs: ["왕십리동", "마장동", "사근동", "행당동", "응봉동", "금호동", "옥수동", "성수동", "송정동", "용답동"] },
+      gwangjin: { name: "광진구", dongs: ["중곡동", "능동", "구의동", "광장동", "자양동", "화양동", "군자동"] },
+      dongdaemun: { name: "동대문구", dongs: ["신설동", "용두동", "제기동", "전농동", "답십리동", "장안동", "청량리동", "회기동", "이문동"] },
+      jungnang: { name: "중랑구", dongs: ["면목동", "상봉동", "중화동", "묵동", "망우동", "신내동"] },
+      seongbuk: { name: "성북구", dongs: ["성북동", "돈암동", "안암동", "보문동", "정릉동", "길음동", "종암동", "월곡동", "장위동", "석관동"] },
+      gangbuk: { name: "강북구", dongs: ["미아동", "번동", "수유동", "우이동", "삼양동", "송중동", "송천동"] },
+      dobong: { name: "도봉구", dongs: ["쌍문동", "방학동", "창동", "도봉동"] },
+      nowon: { name: "노원구", dongs: ["월계동", "공릉동", "하계동", "중계동", "상계동"] },
+      eunpyeong: { name: "은평구", dongs: ["녹번동", "불광동", "갈현동", "구산동", "대조동", "응암동", "역촌동", "신사동", "증산동", "수색동", "진관동"] }
     }
   },
   gyeonggi: {
     name: "경기도",
     districts: {
-      suwon_jangan: { name: "수원시 장안구", dongs: ["파장동", "정자1동", "정자2동", "정자3동", "영화동", "송죽동", "조원1동", "조원2동", "율천동"] },
-      suwon_gwonseon: { name: "수원시 권선구", dongs: ["세류1동", "세류2동", "세류3동", "권선1동", "권선2동", "곡선동", "평동", "호매실동", "서둔동", "금곡동"] },
-      suwon_paldal: { name: "수원시 팔달구", dongs: ["매교동", "매산동", "고등동", "화서1동", "화서2동", "지동", "우만1동", "우만2동", "인계동"] },
-      suwon_yeongtong: { name: "수원시 영통구", dongs: ["매탄1동", "매탄2동", "매탄3동", "매탄4동", "원천동", "영통1동", "영통2동", "영통3동", "망포1동", "망포2동", "광교1동", "광교2동"] },
-      seongnam_sujeong: { name: "성남시 수정구", dongs: ["신흥1동", "신흥2동", "신흥3동", "태평1동", "태평2동", "태평3동", "태평4동", "수진1동", "수진2동", "단대동", "산성동", "양지동", "복정동", "위례동", "신촌동", "고등동", "창곡동"] },
-      seongnam_jungwon: { name: "성남시 중원구", dongs: ["성남동", "중앙동", "금광1동", "금광2동", "은행1동", "은행2동", "상대원1동", "상대원2동", "상대원3동", "하대원동", "도촌동"] },
-      seongnam_bundang: { name: "성남시 분당구", dongs: ["분당동", "수내1동", "수내2동", "수내3동", "정자동", "정자1동", "정자2동", "정자3동", "서현1동", "서현2동", "이매1동", "이매2동", "야탑1동", "야탑2동", "야탑3동", "금곡동", "미금동", "구미동", "판교동", "삼평동", "백현동", "운중동"] },
-      goyang_deogyang: { name: "고양시 덕양구", dongs: ["원신동", "흥도동", "효자동", "창릉동", "능곡동", "행신1동", "행신2동", "행신3동", "화정1동", "화정2동", "대덕동", "고양동", "관산동", "성사동"] },
-      goyang_ilsandong: { name: "고양시 일산동구", dongs: ["식사동", "중산1동", "중산2동", "정발산동", "풍산동", "백석1동", "백석2동", "마두1동", "마두2동", "장항1동", "장항2동", "고봉동"] },
-      goyang_ilsanseo: { name: "고양시 일산서구", dongs: ["일산1동", "일산2동", "일산3동", "탄현1동", "탄현2동", "주엽1동", "주엽2동", "대화동", "송포동", "덕이동"] },
-      yongin_cheoin: { name: "용인시 처인구", dongs: ["포곡읍", "모현읍", "남사읍", "원삼면", "백암면", "동부동", "중앙동", "역삼동", "유림동"] },
-      yongin_giheung: { name: "용인시 기흥구", dongs: ["신갈동", "마북동", "구성동", "동백동", "보정동", "상갈동", "기흥동", "서농동", "중동", "상하동", "보라동"] },
-      yongin_suji: { name: "용인시 수지구", dongs: ["풍덕천1동", "풍덕천2동", "신봉동", "죽전1동", "죽전2동", "동천동", "상현1동", "상현2동", "성복동"] },
-      bucheon_wonmi: { name: "부천시 원미구", dongs: ["심곡동", "원미동", "소사동", "역곡동", "중동", "상동", "약대동"] },
-      bucheon_sosa: { name: "부천시 소사구", dongs: ["소사본동", "범박동", "옥길동", "괴안동", "송내동", "춘의동"] },
-      bucheon_ojeong: { name: "부천시 오정구", dongs: ["오정동", "고강동", "원종동", "성곡동"] },
-      ansan_sangnok: { name: "안산시 상록구", dongs: ["반월동", "사동", "일동", "이동", "본오동", "수암동", "장상동"] },
-      ansan_danwon: { name: "안산시 단원구", dongs: ["와동", "고잔동", "초지동", "원곡동", "백운동", "신길동", "성곡동", "대부동"] },
-      anyang_manan: { name: "안양시 만안구", dongs: ["안양1동", "안양2동", "안양3동", "안양4동", "안양5동", "안양6동", "안양7동", "안양8동", "안양9동", "석수동", "박달동"] },
-      anyang_dongan: { name: "안양시 동안구", dongs: ["비산동", "부흥동", "달안동", "관양동", "평촌동", "평안동", "귀인동", "범계동", "호계동"] },
-      namyangju: { name: "남양주시", dongs: ["와부읍", "진접읍", "화도읍", "수동면", "조안면", "퇴계원읍", "별내면", "별내동", "금곡동", "양정동", "다산동", "평내동", "호평동", "오남읍"] },
-      hwaseong: { name: "화성시", dongs: ["봉담읍", "우정읍", "향남읍", "남양읍", "매송면", "비봉면", "팔탄면", "장안면", "양감면", "정남면", "새솔동", "진안동", "병점동", "반월동", "기배동", "화산동", "동탄동"] },
-      pyeongtaek: { name: "평택시", dongs: ["진위면", "서탄면", "고덕면", "청북읍", "포승읍", "현덕면", "팽성읍", "신장동", "서정동", "송탄동", "지산동", "원평동", "비전동", "소사동", "세교동"] },
-      uijeongbu: { name: "의정부시", dongs: ["의정부동", "호원동", "장암동", "신곡동", "송산동", "가능동", "흥선동", "자금동"] },
-      paju: { name: "파주시", dongs: ["문산읍", "조리읍", "법원읍", "파주읍", "탄현면", "광탄면", "월롱면", "적성면", "파평면", "교하동", "운정동", "금촌동"] },
-      gimpo: { name: "김포시", dongs: ["고촌읍", "통진읍", "대곶면", "월곶면", "하성면", "사우동", "풍무동", "장기동", "구래동", "운양동", "마산동"] },
-      siheung: { name: "시흥시", dongs: ["대야동", "신천동", "신현동", "은행동", "매화동", "목감동", "군자동", "월곶동", "정왕동", "배곧동", "과림동", "연성동"] },
-      gwangmyeong: { name: "광명시", dongs: ["광명동", "철산동", "하안동", "소하동", "학온동"] },
-      gwangju: { name: "광주시", dongs: ["오포읍", "초월읍", "퇴촌면", "남종면", "남한산성면", "송정동", "광남동"] },
-      hanam: { name: "하남시", dongs: ["천현동", "신장동", "덕풍동", "감북동", "위례동", "미사동", "춘궁동", "초이동"] },
-      gunpo: { name: "군포시", dongs: ["군포동", "산본동", "금정동", "재궁동", "오금동", "수리동", "대야미동"] },
-      osan: { name: "오산시", dongs: ["중앙동", "신장동", "세마동", "초평동", "대원동"] },
-      icheon: { name: "이천시", dongs: ["창전동", "중리동", "증포동", "부발읍", "장호원읍"] },
-      anseong: { name: "안성시", dongs: ["공도읍", "죽산면", "삼죽면", "보개면", "금광면", "서운면", "미양면", "대덕면", "원곡면", "양성면", "안성동"] },
-      yangju: { name: "양주시", dongs: ["회천동", "양주동", "백석읍", "은현면", "남면", "장흥면"] },
-      pochon: { name: "포천시", dongs: ["소흘읍", "군내면", "내촌면", "가산면", "일동면", "이동면", "영중면", "창수면", "관인면", "화현면", "포천동", "선단동"] },
-      yeoju: { name: "여주시", dongs: ["여흥동", "중앙동", "오학동", "가남읍"] },
-      dongducheon: { name: "동두천시", dongs: ["생연동", "보산동", "동두천동", "상패동", "중앙동", "송내동", "불현동"] },
-      gapyeong: { name: "가평군", dongs: ["가평읍", "설악면", "청평면", "상면", "조종면", "북면"] },
-      yangpyeong: { name: "양평군", dongs: ["양평읍", "강상면", "강하면", "양서면", "옥천면", "지평면", "용문면", "개군면"] },
-      yeoncheon: { name: "연천군", dongs: ["연천읍", "전곡읍", "군남면", "청산면", "백학면", "미산면", "왕징면", "신서면", "중면"] }
+      suwon: { name: "수원시", dongs: ["인계동", "매탄동", "영통동", "광교동", "곡반정동", "권선동", "세류동", "호매실동", "금곡동", "화서동", "정자동", "조원동", "파장동"] },
+      seongnam: { name: "성남시 (분당·판교)", dongs: ["정자동", "서현동", "야탑동", "이매동", "수내동", "구미동", "판교동", "삼평동", "백현동", "운중동", "신흥동", "태평동", "성남동", "상대원동"] },
+      goyang: { name: "고양시 (일산·덕양)", dongs: ["백석동", "마두동", "장항동", "정발산동", "식사동", "탄현동", "주엽동", "대화동", "행신동", "화정동", "원흥동", "삼송동", "지축동"] },
+      yongin: { name: "용인시 (수지·기흥·처인)", dongs: ["풍덕천동", "죽전동", "상현동", "성복동", "신갈동", "기흥동", "보정동", "동백동", "마북동", "김량장동", "역북동", "유방동"] },
+      bucheon: { name: "부천시", dongs: ["중동", "상동", "심곡동", "원미동", "소사동", "역곡동", "송내동", "오정동", "원종동", "고강동"] },
+      ansan: { name: "안산시", dongs: ["고잔동", "중앙동", "초지동", "선부동", "본오동", "사동", "이동", "일동", "와동", "월피동"] },
+      anyang: { name: "안양시 (평촌·만안)", dongs: ["평촌동", "범계동", "비산동", "호계동", "관양동", "안양동", "석수동", "박달동"] },
+      hwaseong: { name: "화성시 (동탄·향남)", dongs: ["동탄동", "병점동", "진안동", "반월동", "봉담읍", "향남읍", "남양읍", "새솔동"] },
+      pyeongtaek: { name: "평택시 (고덕·송탄)", dongs: ["고덕동", "비전동", "동삭동", "세교동", "합정동", "서정동", "지산동", "송탄동", "안중읍", "포승읍"] },
+      siheung: { name: "시흥시 (배곧·은계)", dongs: ["배곧동", "정왕동", "은계동", "대야동", "신천동", "은행동", "목감동", "장현동", "능곡동"] },
+      gimpo: { name: "김포시 (한강신도시)", dongs: ["구래동", "장기동", "운양동", "마산동", "풍무동", "사우동", "걸포동", "고촌읍", "통진읍"] },
+      paju: { name: "파주시 (운정)", dongs: ["운정동", "야당동", "동패동", "와동동", "금촌동", "문산읍", "조리읍"] },
+      uijeongbu: { name: "의정부시", dongs: ["의정부동", "호원동", "장암동", "신곡동", "민락동", "낙양동", "금오동", "가능동"] },
+      namyangju: { name: "남양주시 (다산·별내)", dongs: ["다산동", "별내동", "평내동", "호평동", "와부읍", "진접읍", "화도읍", "오남읍"] },
+      hanam: { name: "하남시 (미사·위례)", dongs: ["미사동", "망월동", "풍산동", "덕풍동", "신장동", "감이동", "학암동", "위례동"] },
+      gwangmyeong: { name: "광명시 (일직·철산)", dongs: ["철산동", "하안동", "소하동", "일직동", "광명동"] },
+      gunpo: { name: "군포시 (산본)", dongs: ["산본동", "당동", "당정동", "부곡동", "금정동", "대야미동"] },
+      gwangju_gy: { name: "광주시", dongs: ["경안동", "쌍령동", "송정동", "탄벌동", "태전동", "오포읍", "초월읍", "곤지암읍"] },
+      icheon: { name: "이천시", dongs: ["창전동", "중리동", "증포동", "안흥동", "부발읍", "장호원읍"] },
+      osan: { name: "오산시", dongs: ["원동", "궐동", "청학동", "오산동", "세교동", "수청동", "금암동"] },
+      anseong: { name: "안성시", dongs: ["공도읍", "대덕면", "안성동", "당왕동", "아양동", "옥산동"] }
     }
   },
   incheon: {
     name: "인천광역시",
     districts: {
-      junggu: { name: "중구", dongs: ["연안동", "신포동", "동인천동", "북성동", "송월동", "율목동", "도원동", "영종동", "운서동", "용유동", "영종1동", "영종2동"] },
-      donggu: { name: "동구", dongs: ["만석동", "화수1.화평동", "화수2동", "송현1.2동", "송현3동", "송림1동", "송림2동", "송림3.5동", "송림4동", "송림6동", "금창동"] },
-      michuhol: { name: "미추홀구", dongs: ["숭의1.4동", "숭의2동", "숭의3동", "용현1.4동", "용현2동", "용현3동", "용현5동", "학익1동", "학익2동", "도화1동", "도화2.3동", "주안1동", "주안2동", "주안3동", "주안4동", "주안5동", "주안6동", "주안7동", "주안8동", "관교동", "문학동"] },
-      yeonsu: { name: "연수구", dongs: ["옥련1동", "옥련2동", "선학동", "연수1동", "연수2동", "연수3동", "청학동", "동춘1동", "동춘2동", "동춘3동", "송도1동", "송도2동", "송도3동", "송도4동", "송도5동"] },
-      namdong: { name: "남동구", dongs: ["구월1동", "구월2동", "구월3동", "구월4동", "간석1동", "간석2동", "간석3동", "간석4동", "만수1동", "만수2동", "만수3동", "만수4동", "만수5동", "만수6동", "장수서창동", "서창2동", "남촌도림동", "논현1동", "논현2동", "논현고잔동"] },
-      bupyeong: { name: "부평구", dongs: ["부평1동", "부평2동", "부평3동", "부평4동", "부평5동", "부평6동", "산곡1동", "산곡2동", "산곡3동", "산곡4동", "청천1동", "청천2동", "갈산1동", "갈산2동", "삼산1동", "삼산2동", "부개1동", "부개2동", "부개3동", "일신동", "십정1동", "십정2동"] },
-      gyeyang: { name: "계양구", dongs: ["효성1동", "효성2동", "계산1동", "계산2동", "계산3동", "계산4동", "작전1동", "작전2동", "작전서운동", "계양1동", "계양2동", "계양3동"] },
-      seogu: { name: "서구", dongs: ["검암경서동", "연희동", "청라1동", "청라2동", "청라3동", "가정1동", "가정2동", "가정3동", "석남1동", "석남2동", "석남3동", "신현원창동", "가좌1동", "가좌2동", "가좌3동", "가좌4동", "검단동", "불로대곡동", "원당동", "당하동", "오류왕길동", "마전동", "아라동"] },
-      ganghwa: { name: "강화군", dongs: ["강화읍", "선원면", "불은면", "길상면", "화도면", "양도면", "내가면", "하점면", "양사면", "송해면", "교동면", "삼산면", "서도면"] },
-      ongjin: { name: "옹진군", dongs: ["북도면", "백령면", "대청면", "덕적면", "자월면", "영흥면", "연평면"] }
+      yeonsu: { name: "연수구 (송도)", dongs: ["송도동", "옥련동", "연수동", "청학동", "동춘동", "선학동"] },
+      namdong: { name: "남동구 (구월·논현)", dongs: ["구월동", "간석동", "만수동", "논현동", "서창동", "도림동"] },
+      bupyeong: { name: "부평구", dongs: ["부평동", "산곡동", "청천동", "갈산동", "삼산동", "부개동", "십정동"] },
+      seogu: { name: "서구 (청라·검단)", dongs: ["청라동", "검단동", "원당동", "당하동", "마전동", "가정동", "신현동", "석남동", "가좌동", "연희동", "경서동"] },
+      michuhol: { name: "미추홀구 (주안)", dongs: ["주안동", "용현동", "학익동", "도화동", "숭의동", "관교동", "문학동"] },
+      junggu: { name: "중구 (영종)", dongs: ["운서동", "중산동", "운남동", "영종동", "신포동", "동인천동", "연안동"] },
+      gyeyang: { name: "계양구", dongs: ["계산동", "작전동", "효성동", "서운동", "임학동", "용종동"] }
+    }
+  },
+  cheonan: {
+    name: "천안시",
+    districts: {
+      seobuk: { name: "서북구 (불당·두정·성정)", dongs: ["불당동", "두정동", "성정동", "백석동", "쌍용동", "차암동", "성성동", "직산읍", "성거읍", "입장면"] },
+      dongnam: { name: "동남구 (신부·청수)", dongs: ["신부동", "청수동", "청당동", "원성동", "봉명동", "신방동", "목천읍", "풍세면", "병천면"] }
+    }
+  },
+  asan: {
+    name: "아산시",
+    districts: {
+      asan_main: { name: "아산시 전역 (배방·탕정·온양)", dongs: ["배방읍", "탕정면", "온천동", "모종동", "풍기동", "용화동", "신창면", "음봉면", "둔포면"] }
+    }
+  },
+  daejeon: {
+    name: "대전광역시",
+    districts: {
+      yuseong: { name: "유성구 (봉명·도안·관평)", dongs: ["봉명동", "상대동", "도안동", "장대동", "궁동", "어은동", "노은동", "지족동", "반석동", "관평동", "전민동", "원내동"] },
+      seo: { name: "서구 (둔산·월평·탄방)", dongs: ["둔산동", "탄방동", "월평동", "만년동", "갈마동", "괴정동", "용문동", "가장동", "변동", "도마동", "정림동", "가수원동", "관저동"] },
+      jung: { name: "중구 (은행·선화·오류)", dongs: ["은행동", "선화동", "대흥동", "문창동", "옥계동", "대사동", "부사동", "용두동", "오류동", "태평동", "유천동", "문화동", "산성동"] },
+      dong: { name: "동구 (용전·가양)", dongs: ["용전동", "가양동", "자양동", "가오동", "판암동", "홍도동", "삼성동", "성남동", "인동", "효동", "신안동"] },
+      daedeok: { name: "대덕구 (송촌·신탄진)", dongs: ["송촌동", "중리동", "법동", "비래동", "오정동", "신탄진동", "석봉동", "목상동", "덕암동"] }
+    }
+  },
+  cheongju: {
+    name: "청주시",
+    districts: {
+      heungdeok: { name: "흥덕구 (복대·가경·오송)", dongs: ["복대동", "가경동", "봉명동", "송절동", "강서동", "비하동", "오송읍", "옥산면"] },
+      seowon: { name: "서원구 (산남·분평)", dongs: ["산남동", "분평동", "수곡동", "성화동", "개신동", "모충동", "사직동", "사창동", "남이면", "현도면"] },
+      cheongwon: { name: "청원구 (율량·오창)", dongs: ["율량동", "주성동", "우암동", "내덕동", "오창읍", "내수읍", "북이면"] },
+      sangdang: { name: "상당구 (용암·금천)", dongs: ["용암동", "금천동", "탑동", "대성동", "영운동", "용담동", "방서동", "동남지구", "문의면", "가덕면"] }
     }
   }
 };
 
-const shops = [
+// 5개 제휴업체 데이터
+const initialShops = [
   {
     id: 1,
-    name: "🔥 한국골든테라피",
-    location: "서울·경기·인천 전지역 (실시간 신속 방문)",
-    desc: "⭐ 만족도 1위! 지친 일상을 깨우는 정성 가득한 프리미엄 1:1 홈힐링 테라피",
-    phone: "0507-1280-3361",
-    badge: "실시간 인기폭발",
-    badgeColor: "bg-red-500 text-white animate-pulse",
+    name: "✨ 한국미인테라피",
+    location: "서울·경기·인천·충청권 전지역 (실시간 신속 방문)",
+    desc: "🏆 품격 있는 힐링을 선사하는 최고급 프라이빗 1:1 맞춤형 방문 스웨디시 & 아로마 테라피",
+    phone: "0507-1280-3288",
+    badge: "만족도 최우수",
+    badgeColor: "bg-amber-500 text-black font-extrabold shadow-lg shadow-amber-500/20",
     image: "/shop1.jpg",
     courses: [
-      { name: "릴렉스 건식 케어 (60분)", price: "60,000원", best: false },
-      { name: "프리미엄 스웨디시 (60분)", price: "140,000원", best: true },
+      { name: "맞춤형 방문바디케어 (60분)", price: "90,000원", best: false },
+      { name: "스페셜 방문아로마마사지 (60분)", price: "140,000원", best: true },
     ]
   },
   {
     id: 2,
-    name: "✨ 한국미인테라피",
-    location: "서울·경기·인천 전지역",
-    desc: "🏆 품격 있는 힐링을 선사하는 최고급 프라이빗 1:1 맞춤형 방문 테라피",
-    phone: "0507-1280-3288",
-    badge: "만족도 최우수",
-    badgeColor: "bg-amber-500 text-black",
+    name: "🌟 퀸즈홈테라피",
+    location: "수도권 및 천안·아산·대전·청주 전지역",
+    desc: "💯 전문 테라피스트들의 체계적이고 세심한 1:1 맞춤 힐링 및 피로 회복 프로그램",
+    phone: "0507-1280-3228",
+    badge: "신규 제휴할인",
+    badgeColor: "bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-extrabold",
     image: "/shop2.jpg",
     courses: [
-      { name: "맞춤형 바디 케어 (60분)", price: "90,000원", best: false },
-      { name: "스페셜 아로마 힐링 (60분)", price: "140,000원", best: true },
+      { name: "스탠다드 방문타이마사지 (60분)", price: "60,000원", best: false },
+      { name: "VIP 방문스웨디시마사지 (90분)", price: "140,000원", best: true },
     ]
   },
   {
     id: 3,
-    name: "💎 주주테라피",
-    location: "서울·경기·인천 전지역",
-    desc: "⚡ 철저한 위생 관리와 럭셔리 힐링 케어로 완성하는 일상의 완벽한 휴식",
-    phone: "0507-1280-3180",
-    badge: "24시 상시할인",
-    badgeColor: "bg-purple-600 text-white",
+    name: "🔥 한국골든테라피",
+    location: "서울·경기·인천 전지역 상시 신속 방문",
+    desc: "⭐ 만족도 1위! 지친 일상을 깨우는 정성 가득한 프리미엄 1:1 홈타이 & 림프 스웨디시",
+    phone: "0507-1280-3361",
+    badge: "실시간 인기 1위",
+    badgeColor: "bg-red-500 text-white font-black animate-pulse",
     image: "/shop3.jpg",
     courses: [
-      { name: "타이/아로마 코스 (60분)", price: "60,000원", best: false },
-      { name: "한국 스웨디시케어 (60분)", price: "140,000원", best: true },
+      { name: "릴렉스 건식 홈타이 (60분)", price: "60,000원", best: false },
+      { name: "프리미엄 스웨디시마사지 (60분)", price: "140,000원", best: true },
     ]
   },
   {
     id: 4,
-    name: "🌟 퀸즈홈테라피",
-    location: "서울·경기·인천 전지역",
-    desc: "💯 전문 테라피스트들의 체계적이고 세심한 1:1 맞춤 피로 회복 프로그램",
-    phone: "0507-1280-3228",
-    badge: "신규 제휴할인",
-    badgeColor: "bg-blue-600 text-white",
+    name: "💎 젊고마인드좋은테라피",
+    location: "서울·경기·인천·대전·충청 전지역",
+    desc: "⚡ 밝고 친절한 에너지를 전하는 감성 힐링! 내 집에서 편안하게 즐기는 힐링 테라피",
+    phone: "0507-1280-3180",
+    badge: "재방문율 99%",
+    badgeColor: "bg-zinc-800 text-amber-400 border border-amber-500/40 font-bold",
     image: "/shop4.jpg",
     courses: [
-      { name: "스탠다드 타이코스 (60분)", price: "60,000원", best: false },
-      { name: "VIP 스웨디시 (90분)", price: "140,000원", best: true },
+      { name: "타이/아로마 코스 (60분)", price: "60,000원", best: false },
+      { name: "한국 감성 스웨디시 (60분)", price: "140,000원", best: true },
     ]
   },
   {
     id: 5,
     name: "👑 24시미녀테라피",
-    location: "서울·경기·인천 전지역",
-    desc: "🚀 100% 현장 후불 정찰제! 수도권 전지역 평균 30분 내 신속 방문 보장",
-    phone: "0507-1280-3183",
-    badge: "재방문율 99%",
-    badgeColor: "bg-emerald-500 text-black",
+    location: "수도권 및 충청 전지역 30분 내 방문",
+    desc: "🚀 100% 현장 정찰제! 수도권 및 충청권 전지역 평균 30분 내 신속 방문 보장",
+    phone: "0507-1280-3126",
+    badge: "24시 신속방문",
+    badgeColor: "bg-emerald-500 text-black font-extrabold",
     image: "/shop5.jpg",
     courses: [
-      { name: "릴렉스 타이 코스 (60분)", price: "60,000원", best: false },
-      { name: "시그니처 스웨디시 (60분)", price: "140,000원", best: true },
+      { name: "릴렉스 방문타이마사지 (60분)", price: "60,000원", best: false },
+      { name: "시그니처 방문스웨디시마사지 (60분)", price: "140,000원", best: true },
     ]
   }
 ];
@@ -177,6 +187,15 @@ export default function MainClientUI() {
   const [selectedRegion, setSelectedRegion] = useState("seoul");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedDong, setSelectedDong] = useState("");
+  
+  // 새로고침 시 무작위(랜덤) 셔플 상태 관리
+  const [shuffledShops, setShuffledShops] = useState(initialShops);
+
+  useEffect(() => {
+    // Fisher-Yates 셔플 알고리즘으로 페이지 로드 시 무작위 정렬
+    const shuffled = [...initialShops].sort(() => Math.random() - 0.5);
+    setShuffledShops(shuffled);
+  }, []);
 
   const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedRegion(e.target.value);
@@ -191,7 +210,7 @@ export default function MainClientUI() {
 
   const handleSearch = () => {
     if (!selectedDistrict) {
-      alert("원하시는 지역(구/시/군)을 먼저 선택해주세요!");
+      alert("원하시는 구/시/군 지역을 먼저 선택해주세요!");
       return;
     }
     const targetUrl = selectedDong
@@ -210,29 +229,29 @@ export default function MainClientUI() {
     <div className="bg-[#050505] text-gray-100 min-h-screen flex flex-col font-sans selection:bg-amber-500 selection:text-black">
       
       {/* 상단 헤더 */}
-      <header className="sticky top-0 z-50 bg-[#050505]/85 backdrop-blur-xl border-b border-amber-500/20 px-4 py-3.5 shadow-[0_4px_20px_rgba(245,158,11,0.1)]">
+      <header className="sticky top-0 z-50 bg-[#050505]/90 backdrop-blur-xl border-b border-amber-500/20 px-4 py-3.5 shadow-[0_4px_20px_rgba(245,158,11,0.08)]">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <a href="/" className="flex items-center gap-3 group">
-            <img 
-              src="/logo.png" 
-              alt="릴렉스몽 로고" 
-              className="w-10 h-10 rounded-xl object-cover border border-amber-500/40 shadow-[0_0_12px_rgba(245,158,11,0.4)] group-hover:scale-105 transition-transform" 
-            />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center font-black text-black text-xl shadow-[0_0_15px_rgba(245,158,11,0.4)] group-hover:scale-105 transition-transform">
+              TS
+            </div>
             <div className="flex flex-col">
               <span className="text-xl font-black tracking-wider bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 bg-clip-text text-transparent">
-                릴렉스몽
+                더스웨디시
               </span>
-              <span className="text-[10px] text-gray-400 tracking-tighter uppercase">RELAXMONG &middot; SEOUL &middot; GYEONGGI &middot; INCHEON</span>
+              <span className="text-[10px] text-gray-400 tracking-tight uppercase font-medium">
+                THE SWEDISH &middot; 수도권 &middot; 충청권 프리미엄 홈케어
+              </span>
             </div>
           </a>
           
           <div className="flex items-center gap-2">
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
             </span>
-            <span className="text-xs px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-red-500/20 text-amber-300 border border-amber-500/30 font-bold shadow-inner">
-              🔥 24시 실시간 예약접수
+            <span className="text-xs px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 border border-amber-500/30 font-bold shadow-inner">
+              ✨ 24시 실시간 방문예약
             </span>
           </div>
         </div>
@@ -240,26 +259,34 @@ export default function MainClientUI() {
 
       <main className="max-w-4xl mx-auto px-4 py-8 w-full flex-1">
         
-        {/* 메인 배너 */}
+        {/* 메인 히어로 섹션 */}
         <section className="text-center my-2">
-          <div className="mb-8 overflow-hidden rounded-3xl border border-amber-500/30 shadow-[0_0_40px_rgba(245,158,11,0.15)] relative w-full">
-            <img 
-              src="/my-banner.png" 
-              alt="릴렉스몽 메인 배너" 
-              className="w-full h-auto object-cover block"
-            />
+          <div className="mb-6 py-6 px-4 rounded-3xl bg-gradient-to-b from-[#121214] to-[#0a0a0c] border border-amber-500/20 text-center shadow-lg relative overflow-hidden">
+            <span className="inline-block text-xs font-bold text-amber-400 tracking-widest uppercase bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 mb-3">
+              Premium Swedish & Home Thai Platform
+            </span>
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-snug">
+              내 공간에서 누리는 가장 완벽한 힐링 <br />
+              <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-500 bg-clip-text text-transparent">
+                더스웨디시 (The Swedish)
+              </span>
+            </h1>
+            <p className="mt-3 text-xs sm:text-sm text-gray-400 max-w-xl mx-auto leading-relaxed">
+              서울 · 경기 · 인천 · 천안 · 아산 · 대전 · 청주 전 지역 <br />
+              스웨디시마사지 &middot; 홈타이 &middot; 방문아로마마사지 엄선 제휴 샵 실시간 연결
+            </p>
           </div>
 
-          {/* 지역 선택 박스 */}
+          {/* 지역 선택 검색 박스 */}
           <div className="bg-gradient-to-b from-[#18181b] to-[#0f0f11] border-2 border-amber-500/40 p-6 rounded-3xl max-w-xl mx-auto mb-14 shadow-[0_10px_30px_rgba(0,0,0,0.8)] text-left relative overflow-hidden">
             <div className="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
 
             <div className="flex items-center justify-between mb-4">
               <label className="text-xs text-amber-400 font-black uppercase tracking-wider flex items-center gap-1.5">
-                📍 내 주변 맞춤 제휴업체 찾기
+                📍 내 주변 제휴업체 찾기
               </label>
               <span className="text-[11px] text-gray-400 bg-black/40 px-2.5 py-1 rounded-lg border border-white/5">
-                수도권 전지역 실시간 대기중
+                수도권 &middot; 충청권 전지역 대기
               </span>
             </div>
 
@@ -296,7 +323,7 @@ export default function MainClientUI() {
               </div>
 
               <div>
-                <span className="text-[11px] text-gray-400 block mb-1 font-semibold">3단계: 동 선택 (선택사항)</span>
+                <span className="text-[11px] text-gray-400 block mb-1 font-semibold">3단계: 읍·면·동 선택 (선택사항)</span>
                 <select 
                   value={selectedDong} 
                   onChange={(e) => setSelectedDong(e.target.value)} 
@@ -316,24 +343,24 @@ export default function MainClientUI() {
                 onClick={handleSearch}
                 className="w-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-black font-black py-4 rounded-2xl text-sm transition-all shadow-[0_0_25px_rgba(245,158,11,0.4)] mt-3 cursor-pointer transform active:scale-[0.98]"
               >
-                🚀 내 동네 제휴업체 실시간 확인하기
+                🚀 내 주변 테라피 제휴샵 확인하기
               </button>
             </div>
           </div>
         </section>
 
-        {/* 추천 제휴 업체 리스트 */}
+        {/* 추천 제휴 업체 리스트 (새로고침 시 랜덤 정렬) */}
         <section className="space-y-6">
           <div className="flex justify-between items-end mb-4 px-2">
             <div>
               <h2 className="text-xl md:text-2xl font-black text-white flex items-center gap-2">
-                <span>🏆</span> 실시간 베스트 추천 제휴업체
+                <span>🏆</span> 더스웨디시 추천 프리미엄 제휴샵
               </h2>
-              <p className="text-xs text-gray-400 mt-1">고객 만족도 및 재방문율이 가장 검증된 프리미엄 홈케어 샵입니다.</p>
+              <p className="text-xs text-gray-400 mt-1">철저한 위생 관리와 검증된 실력을 갖춘 안심 홈케어 테라피입니다.</p>
             </div>
           </div>
 
-          {shops.map((shop) => (
+          {shuffledShops.map((shop) => (
             <article 
               key={shop.id} 
               className="bg-gradient-to-b from-[#141416] to-[#0d0d0f] border border-amber-500/20 hover:border-amber-500/60 transition-all duration-300 rounded-3xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.5)] relative group"
@@ -347,7 +374,7 @@ export default function MainClientUI() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#141416] via-transparent to-black/30"></div>
                 
                 <div className="absolute top-4 left-4 flex items-center gap-2">
-                  <span className={`text-[11px] font-black px-3 py-1 rounded-full shadow-lg ${shop.badgeColor}`}>
+                  <span className={`text-[11px] px-3 py-1 rounded-full shadow-lg ${shop.badgeColor}`}>
                     {shop.badge}
                   </span>
                 </div>
@@ -396,7 +423,7 @@ export default function MainClientUI() {
                     <span className="text-base">📞</span> 전화로 즉시예약
                   </a>
                   <a 
-                    href={`sms:${shop.phone}?body=${encodeURIComponent(`${shop.name} 예약 문의드립니다. (릴렉스몽 보고 연락드렸어요)`)}`} 
+                    href={`sms:${shop.phone}?body=${encodeURIComponent(`${shop.name} 예약 문의드립니다. (더스웨디시 보고 연락드렸어요)`)}`} 
                     className="flex items-center justify-center gap-2 bg-neutral-900 hover:bg-neutral-800 text-white font-black py-4 rounded-2xl text-xs md:text-sm border border-white/10 transition-all hover:border-amber-500/40 transform active:scale-95 shadow-md"
                   >
                     <span className="text-base">💬</span> 간편 문자상담
@@ -412,8 +439,11 @@ export default function MainClientUI() {
       {/* 하단 푸터 */}
       <footer className="bg-[#030303] border-t border-white/10 py-10 text-center text-gray-500 text-xs mt-auto">
         <div className="max-w-4xl mx-auto px-4 space-y-3">
-          <p className="text-gray-400 font-bold">릴렉스몽은 건전하고 안전한 1:1 방문 홈케어 정보 플랫폼입니다.</p>
-          <p className="text-[11px] text-gray-600">COPYRIGHT &copy; RELAXMONG ALL RIGHTS RESERVED.</p>
+          <p className="text-gray-400 font-bold">더스웨디시는 건전하고 품격 있는 1:1 방문 홈케어 테라피 정보 플랫폼입니다.</p>
+          <p className="text-[11px] text-gray-500">
+            서비스 가능 지역: 서울특별시 &middot; 경기도 &middot; 인천광역시 &middot; 천안시 &middot; 아산시 &middot; 대전광역시 &middot; 청주시
+          </p>
+          <p className="text-[11px] text-gray-600">COPYRIGHT &copy; THE SWEDISH ALL RIGHTS RESERVED.</p>
         </div>
       </footer>
     </div>

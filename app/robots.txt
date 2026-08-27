@@ -1,11 +1,24 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
+  // 실제 운영 도메인 (Netlify 도메인 또는 구입한 커스텀 도메인)
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://theswedish.netlify.app';
+
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-    },
-    sitemap: 'https://relaxmong.netlify.app/sitemap.xml',
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+      },
+      {
+        userAgent: 'Yeti', // 네이버 검색 로봇 전용 허용
+        allow: '/',
+      },
+      {
+        userAgent: 'Googlebot', // 구글 검색 로봇 전용 허용
+        allow: '/',
+      },
+    ],
+    sitemap: `${baseUrl}/sitemap.xml`,
   };
 }
