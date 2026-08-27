@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { regionData } from "./data/regions";
+import { regionData } from "../data/regions"; // 만약 에러 시 '@/data/regions' 로 변경
 
 // 🎯 5개 정식 제휴업체 데이터
 const initialShops = [
@@ -82,11 +82,10 @@ export default function HomePage() {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedDong, setSelectedDong] = useState("");
 
-  // 새로고침 시 무작위(랜덤) 셔플 상태 관리
+  // 새로고침 시 무작위(랜덤) 셔플
   const [shuffledShops, setShuffledShops] = useState(initialShops);
 
   useEffect(() => {
-    // Fisher-Yates 셔플 알고리즘으로 페이지 로드 시 무작위 정렬
     const shuffled = [...initialShops].sort(() => Math.random() - 0.5);
     setShuffledShops(shuffled);
   }, []);
@@ -151,8 +150,17 @@ export default function HomePage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8 w-full flex-1">
-        {/* 메인 히어로 배너 섹션 */}
+        {/* 메인 배너 및 안내 섹션 */}
         <section className="text-center my-2">
+          {/* 📍 상단 메인 배너 이미지 */}
+          <div className="mb-6 overflow-hidden rounded-3xl border border-amber-500/30 shadow-[0_0_40px_rgba(245,158,11,0.15)] relative w-full">
+            <img
+              src="/my-banner.png"
+              alt="더스웨디시 메인 배너"
+              className="w-full h-auto object-cover block"
+            />
+          </div>
+
           <div className="mb-6 py-6 px-4 rounded-3xl bg-gradient-to-b from-[#121214] to-[#0a0a0c] border border-amber-500/20 text-center shadow-lg relative overflow-hidden">
             <span className="inline-block text-xs font-bold text-amber-400 tracking-widest uppercase bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 mb-3">
               Premium Swedish & Home Thai Platform
@@ -169,7 +177,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* 3단계 지역 선택 검색 박스 (data/regions.ts 연동) */}
+          {/* 3단계 지역 선택 검색 박스 */}
           <div className="bg-gradient-to-b from-[#18181b] to-[#0f0f11] border-2 border-amber-500/40 p-6 rounded-3xl max-w-xl mx-auto mb-14 shadow-[0_10px_30px_rgba(0,0,0,0.8)] text-left relative overflow-hidden">
             <div className="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none"></div>
 
@@ -241,7 +249,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 추천 제휴 업체 리스트 (새로고침 시 무작위 랜덤 셔플) */}
+        {/* 추천 제휴 업체 리스트 */}
         <section className="space-y-6">
           <div className="flex justify-between items-end mb-4 px-2">
             <div>
